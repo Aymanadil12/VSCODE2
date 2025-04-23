@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Guess the Number - Game</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    input, button {
+      margin-top: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    #result {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="home.html">Home</a>
+    <a href="game.html">Game</a>
+    <a href="rules.html">Rules</a>
+    <a href="about.html">About</a>
+    <a href="scores.html">Scores</a>
+    <a href="settings.html">Settings</a>
+    <a href="profile.html">Profile</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+
+  <section>
+    <h1>Guess the Number</h1>
+    <p id="rangeInfo">Guess a number!</p>
+    <input type="number" id="guessInput" placeholder="Enter your guess" />
+    <button onclick="checkGuess()">Submit Guess</button>
+    <div id="result"></div>
+  </section>
+
+  <script>
+    let targetNumber;
+    let min = 1;
+    let max = 100;
+    let attemptCount = 0;
+
+    const difficulty = localStorage.getItem('gameDifficulty') || 'medium';
+
+    if (difficulty === 'easy') {
+      max = 50;
+    } else if (difficulty === 'hard') {
+      max = 200;
+    }
+
+    function startGame() {
+      targetNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+      attemptCount = 0;
+      document.getElementById("rangeInfo").textContent = `Guess a number between ${min} and ${max}`;
+      console.log(`(Debug) Target number: ${targetNumber}`);
+    }
+
+    function checkGuess() {
+      const guessInput = document.getElementById("guessInput");
+      const result = document.getElementById("result");
+      const userGuess = parseInt(guessInput.value);
+
+      if (isNaN(userGuess)) {
+        result.textContent = "Please enter a valid number.";
+        return;
+      }
+
+      attemptCount++;
+
+      if (userGuess === targetNumber) {
+        result.textContent = `🎉 Correct! You guessed it in ${attemptCount} tries!`;
+
+        // Save score
+        const newScore = {
+          tries: attemptCount,
+          target: targetNumber
+        };
+
+        const scores = JSON.parse(localStorage.getItem('gameScores')) || [];
+        scores.push(newScore);
+        localStorage.setItem('gameScores', JSON.stringify(scores));
+
+        // Optional: reset game after delay
+        setTimeout(() => {
+          if (confirm("Play again?")) {
+            startGame();
+            guessInput.value = "";
+            result.textContent = "";
+          }
+        }, 1500);
+      } else if (userGuess < targetNumber) {
+        result.textContent = "Too low! Try again.";
+      } else {
+        result.textContent = "Too high! Try again.";
+      }
+    }
+
+    window.onload = startGame;
+  </script>
+</body>
+</html>
