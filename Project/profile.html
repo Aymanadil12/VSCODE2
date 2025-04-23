@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Profile - Guess the Number</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input, button {
+      margin-top: 5px;
+    }
+    #avatarPreview, #currentAvatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-top: 10px;
+      border: 2px solid #ddd;
+    }
+    .avatar-container {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="home.html">Home</a>
+    <a href="game.html">Game</a>
+    <a href="rules.html">Rules</a>
+    <a href="about.html">About</a>
+    <a href="scores.html">Scores</a>
+    <a href="settings.html">Settings</a>
+    <a href="profile.html">Profile</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+
+  <section>
+    <h1>Your Profile</h1>
+    <p><strong>Current Name:</strong> <span id="currentName">Not set</span></p>
+    <div class="avatar-container">
+      <div>
+        <p><strong>Current Avatar:</strong></p>
+        <img id="currentAvatar" src="" alt="Current Avatar">
+      </div>
+      <div>
+        <p><strong>New Avatar Preview:</strong></p>
+        <img id="avatarPreview" src="" alt="New Avatar Preview">
+      </div>
+    </div>
+
+    <form id="profileForm">
+      <label for="username">New Name:</label>
+      <input type="text" id="username" name="username" placeholder="Enter your name">
+
+      <label for="avatar">New Avatar:</label>
+      <input type="file" id="avatar" name="avatar" accept="image/*">
+
+      <button type="submit">Save Profile</button>
+    </form>
+  </section>
+
+  <script>
+    const form = document.getElementById('profileForm');
+    const usernameInput = document.getElementById('username');
+    const avatarInput = document.getElementById('avatar');
+    const avatarPreview = document.getElementById('avatarPreview');
+    const currentAvatar = document.getElementById('currentAvatar');
+    const currentName = document.getElementById('currentName');
+
+    // Load saved data
+    window.onload = () => {
+      const savedName = localStorage.getItem('profileName');
+      const savedAvatar = localStorage.getItem('profileAvatar');
+
+      if (savedName) {
+        usernameInput.value = savedName;
+        currentName.textContent = savedName;
+      }
+      if (savedAvatar) {
+        avatarPreview.src = savedAvatar;
+        currentAvatar.src = savedAvatar;
+      } else {
+        currentAvatar.src = 'default-avatar.png'; // Optional fallback
+      }
+    };
+
+    avatarInput.addEventListener('change', () => {
+      const file = avatarInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          avatarPreview.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      localStorage.setItem('profileName', usernameInput.value);
+      localStorage.setItem('profileAvatar', avatarPreview.src);
+      currentName.textContent = usernameInput.value;
+      currentAvatar.src = avatarPreview.src;
+      alert('Profile updated!');
+    });
+  </script>
+</body>
+</html>
+
